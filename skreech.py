@@ -32,8 +32,11 @@ def describe_current_room():
     """Prints the description of the current room and any items present."""
     room = rooms[current_room]
     print(room["description"])
+
     if room["item"]:
         print(f"You see a {room['item']} here.")
+
+    print()  # Add a blank line for better readability
 
 
 def take_item(item_name):
@@ -44,9 +47,9 @@ def take_item(item_name):
     if item_name == room["item"]:
         inventory.append(item_name)
         room["item"] = None  # Remove item from room after taking
-        print(f"You have taken the {item_name}.")
+        print(f"You have taken the {item_name}.\n")
     else:
-        print(f"There is no {item_name} here.")
+        print(f"There is no {item_name} here.\n")
 
 
 def attempt_puzzle():
@@ -57,22 +60,22 @@ def attempt_puzzle():
 
         if answer == rooms["Library"]["answer"]:
             print(
-                "Correct! The hidden compartment opens, revealing a powerful spell scroll."
+                "Correct! The hidden compartment opens, revealing a powerful spell scroll.\n"
             )
             rooms["Library"]["puzzle_solved"] = True  # Mark the puzzle as solved
             inventory.append(
                 "spell scroll"
             )  # Add the new item to the player's inventory
         else:
-            print("That's not correct. Try again.")
+            print("That's not correct. Try again.\n")
 
 
 def show_inventory():
     """Displays the player's current inventory."""
     if inventory:
-        print("You are carrying: " + ", ".join(inventory))
+        print("You are carrying: " + ", ".join(inventory) + "\n")
     else:
-        print("Your inventory is empty.")
+        print("Your inventory is empty.\n")
 
 
 while True:
@@ -95,13 +98,13 @@ while True:
         if direction in rooms[current_room]:
             current_room = rooms[current_room][direction]
         else:
-            print("You can't go that way.")
+            print("You can't go that way.\n")
     elif command == "inventory":
         show_inventory()  # Call the function to show the inventory
     elif command == "quit":
-        print("Thanks for playing!")
+        print("Thanks for playing!\n")
         break
     else:
         print(
-            "Invalid command. Try 'take [item]', 'solve puzzle', 'go [direction]', 'inventory', or 'quit'."
+            "Invalid command. Try 'take [item]', 'solve puzzle', 'go [direction]', 'inventory', or 'quit'.\n"
         )
