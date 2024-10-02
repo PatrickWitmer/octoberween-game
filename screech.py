@@ -1,28 +1,48 @@
 # Define the rooms in the game and thier connections
 
 rooms = {
-    "hall": {
-        "description": "You are in a grand hall with a chandelier overhead. There are doors to the north and east.",
-        "north": "kitchen",
-        "east": "living room",
-        "item": "candle",
+    "Hall": {
+        "description": "\nYou are in a dimly lit hall, shadows dance on the walls as you hear a faint whispering.",
+        "north": "Library",
+        "south": "Kitchen",
+        "item": "ancient key",
     },
-    "kitchen": {
-        "description": "You are in a small kitchen. There is a door to the south.",
-        "south": "hall",
+    "Library": {
+        "description": "\nThe library is filled with dusty old books. A large tome lies open on the table, and you feel a chill.",
+        "south": "Hall",
         "item": "magic book",
+        "puzzle_solved": False,  # Track if the puzzle has been solved
+        "riddle": "\nA voice whispers to you, wwwhat has keys but can't open locks?",
+        "answer": "piano",  # Correct answer
     },
-    "living room": {
-        "description": "You are in a cozy living room with a  fireplace. There is a door to the west.",
-        "west": "hall",
+    "Kitchen": {
+        "description": "\nThe kitchen smells of decay. An old fridge stands against the wall, slightly ajar.",
+        "north": "Hall",
+        "item": "rusty knife",
     },
 }
+
 
 # Initialize player's inventory
 inventory = []
 
 # Player starts in the hall
-current_room = "hall"
+current_room = "Hall"
+
+
+def attempt_puzzle():
+    if current_room == "Library" and not rooms["Library"]["puzzle_solved"]:
+        print(rooms["Library"]["riddle"])
+        answer = input("Enter the answer: ").strip().lower()
+        if answer == rooms["Library"]["answer"]:
+            print(
+                "\nCorrect! The hidden compartment opens, revealing a powerful spell scroll."
+            )
+            rooms["Library"]["puzzle_solved"] = True  # Mark the puzzle as solved
+            inventory.append("spell scroll")
+        else:
+            print("\nIncorrect. The compartment remains closed.")
+
 
 # Basic game loop
 while True:
@@ -32,12 +52,12 @@ while True:
     # If there's an item in the room, display it
     if "item" in rooms[current_room]:
         item_in_room = rooms[current_room]["item"]
-        print(f"You see a {item_in_room} here.")
+        print(f"\nYou see a {item_in_room} here.")
 
     # Get the player's input, show the item in the room if it exists
     if item_in_room:
         command = input(
-            f"\nEnter a command: (north, south, east, west, take {item_in_room}, inventory, quit): "
+            f"\nEnter a command: (north, south, east, west, take {item_in_room}, inventory, solve puzzle, quit): "
         ).lower()
     else:
         command = input(
@@ -46,7 +66,7 @@ while True:
 
     # Quit the game if the player enters 'quit'
     if command == "quit":
-        print("Thanks for playing!")
+        print("\nThanks for playing!")
         break
 
     # Check if the player is trying to take an item
@@ -55,23 +75,25 @@ while True:
             # Split the command, allowing for mulitple word items
             _, item_name = command.split(maxsplit=1)
         except ValueError:
-            print("You must enter a valid item to take.")
+            print("\nYou must enter a valid item to take.")
             continue
 
         # Check if the item exists in the room
         if "item" in rooms[current_room] and item_name == rooms[current_room]["item"]:
             # Add the item to the player's inventory
             inventory.append(item_name)
-            print(f"You take the {item_name}.")
+            print(f"\nYou take the {item_name}.")
             # Remove the item from the room
             del rooms[current_room]["item"]
         else:
-            print(f"There is no {item_name} here to take.")
+            print(f"\nThere is no {item_name} here to take.")
 
     # Check if the player wants to check their inventory
     elif command == "inventory":
-        print("You are carrying: ", ", ".join(inventory) if inventory else "nothing")
+        print("\nYou are carrying: ", ", ".join(inventory) if inventory else "nothing")
 
+    elif command == "solve puzzle":
+        attempt_puzzle()  # Call the puzzle attempt function
     # Move to the next room if the command is valid
     elif command in rooms[current_room]:
         current_room = rooms[current_room][command]
